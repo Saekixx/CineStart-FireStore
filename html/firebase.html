@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+      import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCSZ4fjZSPgjzQ903oU-Xi6Uq0F_qH0-vU",
+        authDomain: "jack-cinestar.firebaseapp.com",
+        projectId: "jack-cinestar", 
+        storageBucket: "jack-cinestar.firebasestorage.app",
+        messagingSenderId: "871949690452",
+        appId: "1:871949690452:web:a67e03e6fbb3cc425eefc1"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const setPeliculas = async() =>{
+        const data = await fetch('http://localhost/cinestart/peliculas')
+        const peliculas = await data.json()
+        peliculas.data.forEach(pelicula => {
+          addDoc(collection(db,'peliculas'), pelicula)
+        })
+      }
+
+      const setCines = async() =>{
+        const data = await fetch('http://localhost/cinestart/cines')
+        const cines = await data.json()
+        cines.data.forEach(async cine => {
+          const peliculas = await fetch(`http://localhost/cinestart/cines/${cine.id}/peliculas`)
+          cine.peliculas = (await peliculas.json()).data
+
+          const tarifas = await fetch(`http://localhost/cinestart/cines/${cine.id}/tarifas`)
+          cine.tarifas = (await tarifas.json()).data
+          addDoc(collection(db,'cines'), cine)
+        })
+
+      }
+
+      setPeliculas()
+      setCines()
+    </script>
+
+  </body>
+</html>
