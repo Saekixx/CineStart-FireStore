@@ -43,6 +43,12 @@ const mostrarDetalleCine = (dataCines) => {
   // Buscar el cine con el ID correspondiente
   const cine = dataCines.find((item) => item.id === id);
 
+  if (!cine.peliculas || !cine.tarifas) {
+    document.getElementById("detalle-cine").innerHTML =
+      "<h2>No se encontro información del cine...</h2>";
+    return;
+  }
+
   // Si no se encuentra el cine, mostrar un mensaje de error
   if (!cine) {
     document.getElementById("detalle-cine").innerHTML =
